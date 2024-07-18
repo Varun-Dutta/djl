@@ -21,26 +21,22 @@ on:
         required: false
       djl-tag: 
         type: string
-        description: The commit number (e.g. 6b642e1) for the tag of the new version of djl.
-        default: 'https://github.com/deepjavalibrary/djl.git'
+        description: The commit SHA (e.g. 6b642e1) for the tag of the version of djl.
+        default: 'DJL SHA'
         required: false
-      djl-serving-branch:
+      djl-serving-tag:
         type: string
-        description: The url for the new branch corresponding to new version of djl-serving.
-        default: 'https://github.com/deepjavalibrary/djl-serving.git'
+        description: The commit SHA (e.g. 6b642e1) for the version of djl-serving.
+        default: 'DJL Serving SHA'
         required: false
       djl-demo-tag:
-        description: The commit number (e.g. 6b642e1) for the tag of the new version of djl-demo. 
-        default: 'https://github.com/deepjavalibrary/djl-demo.git'
+        description: The commit SHA (e.g. 6b642e1) for the version of djl-demo. 
+        default: 'DJL Demo SHA'
         required: false
       testing:
         type: boolean
         description: Is this a test run that will be build into gamma account?
         default: false
-        required: false
-      testing-credentials:
-        description: If testing, enter the gamma account zsh credentials
-        default: None
         required: false
 
 jobs:
@@ -77,14 +73,14 @@ jobs:
           cd .. 
           mkdir site
           
-      - name: Set-up Versioned Website Directory 
-        if: ${{github.event.inputs.is-new-version}}
+      - name: Checkout Previous Version of DJL Repo
+        if: ${{ github.event.inputs.is-new-version }}
         uses: actions/checkout@v4
         with: 
-          ref: ${{github.event.inputs.djl-tag}}
+          ref: ${{ github.event.inputs.djl-tag }}
           
-      - name: Set-up Dev Directory
-        if: ${{!github.event.inputs.is-new-version}}
+      - name: Checkout Current Version of DJL Repo
+        if: ${{ !github.event.inputs.is-new-version }}
         uses: actions/checkout@v4
         
       - name: Add mybinder link
@@ -93,9 +89,9 @@ jobs:
           
       - name: Clone DJL-Serving and DJL Demos
         env:
-          NEW_VERSION_BOOLEAN: ${{github.event.inputs.is-new-version}}
-          DJL_DEMO_SHA: ${{github.event.inputs.djl-demo-tag}}
-          DJL_SERVING_SHA: ${{github.event.inputs.djl-serving-branch}}
+          NEW_VERSION_BOOLEAN: ${{ github.event.inputs.is-new-version }}
+          DJL_DEMO_SHA: ${{ github.event.inputs.djl-demo-tag }}
+          DJL_SERVING_SHA: ${{ github.event.inputs.djl-serving-tag }}
         run: |
           cd docs
           git clone https://github.com/deepjavalibrary/djl-demo.git demos
@@ -115,14 +111,14 @@ jobs:
           bash test_notebook.sh
 
       - name: Configure AWS Test Credentials
-        if: ${{github.event.inputs.testing}}
+        if: ${{ github.event.inputs.testing }}
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
           role-to-assume: arn:aws:iam::185921645874:role/UpdateWebsite
           aws-region: us-east-1
       
-      - name: Configure AWS Credentials
-        if: ${{github.event_name != 'pull_request' && github.event.inputs.testing != 'true'}}
+      - name: Configure Deployment AWS Credentials
+        if: ${{ github.event_name != 'pull_request' && github.event.inputs.testing != 'true' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -131,11 +127,11 @@ jobs:
 
       - name: Sync gh-pages
         env: 
-          TESTING: ${{github.event.inputs.testing}}
+          TESTING: ${{ github.event.inputs.testing }}
         run: |
           mike delete --all
           git checkout gh-pages
-          if [$TESTING = 'true']; then
+          if [ $TESTING = 'true' ]; then
             aws s3 sync s3://updated-documentation-website/website . 
           else
             aws s3 sync s3://djl-ai/documentation/nightly .
@@ -146,8 +142,8 @@ jobs:
         #Double Check
       - name: build docs
         env:
-          VERSION_NUMBER: ${{github.event.inputs.version-number}}
-          IS_NEW_VERSION: ${{github.event.inputs.is-new-version}}
+          VERSION_NUMBER: ${{ github.event.inputs.version-number }}
+          IS_NEW_VERSION: ${{ github.event.inputs.is-new-version }}
         run: |
           cd docs
           export DJL_DISABLE_PROGRESS_BAR=true
@@ -162,7 +158,7 @@ jobs:
       - name: Copy files to S3 with the AWS CLI
         if: github.event_name != 'pull_request'
         env:
-          TESTING: ${{github.event.inputs.testing}}
+          TESTING: ${{ github.event.inputs.testing }}
         run: |
           git checkout gh-pages
           if [$TESTING = 'true']; then
