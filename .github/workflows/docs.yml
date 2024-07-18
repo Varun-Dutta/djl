@@ -8,6 +8,31 @@ on:
   schedule:
     - cron:  '0 9 * * 1'
   workflow_dispatch:
+    inputs:
+      is-new-version:
+        type: boolean
+        description: Deploying new version?
+        default: false
+        required: true
+      version-number:
+        type: string 
+        description: The new version number for the website
+        default: dev
+        required: false
+      djl-tag: 
+        type: string
+        description: The commit number (e.g. 6b642e1) for the tag of the new version of djl.
+        default: 'https://github.com/deepjavalibrary/djl.git'
+        required: false
+      djl-serving-branch:
+        type: string
+        description: The url for the new branch corresponding to new version of djl-serving.
+        default: 'https://github.com/deepjavalibrary/djl-serving.git'
+        required: false
+      djl-demo-tag:
+        description: The commit number (e.g. 6b642e1) for the tag of the new version of djl-demo. 
+        default: 'https://github.com/deepjavalibrary/djl-demo.git'
+        required: false
 
 jobs:
   documentation:
