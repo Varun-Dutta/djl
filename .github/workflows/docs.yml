@@ -11,12 +11,12 @@ on:
     inputs:
       is-new-version:
         type: boolean
-        description: Deploying new version?
+        description: Deploying new version? If not, skip the next parameters. 
         default: false
         required: true
       version-number:
         type: string 
-        description: The new version number for the website
+        description: What is the new version number for the website?
         default: dev
         required: false
       djl-tag: 
@@ -72,7 +72,15 @@ jobs:
         run: |
           cd .. 
           mkdir site
-          
+
+      - name: Canary
+        if: ${{ github.event.inputs.is-new-version }}
+        run: echo "Is New Version" 
+
+      - name: Other Canary
+        if: ${{ !github.event.inputs.is-new-version }}
+        run: echo "Is Previous Version" 
+        
       - name: Checkout Previous Version of DJL Repo
         if: ${{ github.event.inputs.is-new-version }}
         uses: actions/checkout@v4
