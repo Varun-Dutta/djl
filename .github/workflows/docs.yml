@@ -11,7 +11,7 @@ on:
     inputs:
       is-new-version:
         type: boolean
-        description: Deploying new version? If not, skip the next parameters. 
+        description: Deploying new version? If not, skip the next four parameters. 
         default: false
         required: true
       version-number:
@@ -73,22 +73,14 @@ jobs:
           cd .. 
           mkdir site
 
-      - name: Canary
-        if: ${{ github.event.inputs.is-new-version }}
-        run: echo "Is New Version" 
-
-      - name: Other Canary
-        if: ${{ !github.event.inputs.is-new-version }}
-        run: echo "Is Previous Version" 
-        
       - name: Checkout Previous Version of DJL Repo
-        if: ${{ github.event.inputs.is-new-version }}
+        if: ${{ github.event.inputs.is-new-version == 'true' }}
         uses: actions/checkout@v4
         with: 
           ref: ${{ github.event.inputs.djl-tag }}
           
       - name: Checkout Current Version of DJL Repo
-        if: ${{ !github.event.inputs.is-new-version }}
+        if: ${{ github.event.inputs.is-new-version == 'false' }}
         uses: actions/checkout@v4
         
       - name: Add mybinder link
@@ -119,7 +111,7 @@ jobs:
           bash test_notebook.sh
 
       - name: Configure AWS Test Credentials
-        if: ${{ github.event.inputs.testing }}
+        if: ${{ github.event.inputs.testing == 'true' }}
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
           role-to-assume: arn:aws:iam::185921645874:role/UpdateWebsite
