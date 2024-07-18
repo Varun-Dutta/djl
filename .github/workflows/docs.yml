@@ -136,13 +136,14 @@ jobs:
           mike delete --all
           git checkout gh-pages
           if [$TESTING = 'true']; then
-            aws s3 sync s3://updated-documentation-website/website ../../"s3 test" .
+            aws s3 sync s3://updated-documentation-website/website . 
           else
-            aws s3 sync ../site s3://djl-ai/documentation/nightly .
+            aws s3 sync s3://djl-ai/documentation/nightly .
           fi
           git checkout master
         shell: bash
-        
+
+        #Double Check
       - name: build docs
         env:
           VERSION_NUMBER: ${{github.event.inputs.version-number}}
@@ -150,17 +151,25 @@ jobs:
         run: |
           cd docs
           export DJL_DISABLE_PROGRESS_BAR=true
-          if [$IS_NEW_VERSION = 'true']; then
+          if [ '$IS_NEW_VERSION' = 'true' ]; then
             export DJL_DISABLE_PROGRESS_BAR=true
-            mike deploy VERSION_NUMBER
+            mike deploy $VERSION_NUMBER latest
           else
-            mike deploy "dev"
-            mike set-default VERSION_NUMBER
-          shell: base
+            mike deploy dev 
+            mike set-default dev
+        shell: bash
             
-          
       - name: Copy files to S3 with the AWS CLI
         if: github.event_name != 'pull_request'
+        env:
+          TESTING: ${{github.event.inputs.testing}}
         run: |
-          aws s3 sync ../site s3://djl-ai/documentation/nightly --delete
-          aws cloudfront create-invalidation --distribution-id E733IIDCG0G5U --paths "/*"
+          git checkout gh-pages
+          if [$TESTING = 'true']; then
+            aws s3 sync . s3://updated-documentation-website/website --delete
+          else
+            aws s3 sync . s3://djl-ai/documentation/nightly --delete
+            aws cloudfront create-invalidation --distribution-id E733IIDCG0G5U --paths "/*"
+          fi
+        shell: bash
+        
