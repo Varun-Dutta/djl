@@ -77,7 +77,7 @@ jobs:
         if: ${{ github.event.inputs.is-new-version == 'true' }}
         uses: actions/checkout@v4
         with: 
-          ref: ${{ github.event.inputs.djl-tag }}
+          ref: refs/tags/${{ github.event.inputs.djl-tag }}
           
       - name: Checkout Current Version of DJL Repo
         if: ${{ github.event.inputs.is-new-version == 'false' }}
