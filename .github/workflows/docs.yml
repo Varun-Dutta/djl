@@ -75,6 +75,7 @@ jobs:
           
       - name: Create website directory
         run: |
+          cd /home/runner/work/djl
           mkdir site
           pwd
           ls
@@ -100,7 +101,7 @@ jobs:
           DJL_SERVING_SHA: ${{ github.event.inputs.djl-serving-tag }}
         run: |
           pwd
-          cd djl/docs
+          cd /home/runner/work/djl/djl/docs
           git clone https://github.com/deepjavalibrary/djl-demo.git demos
           git clone https://github.com/deepjavalibrary/djl-serving.git serving
           if [ "$NEW_VERSION_BOOLEAN" = "true" ]; then
@@ -146,7 +147,7 @@ jobs:
         run: |
           pwd
           ls
-          cd djl/docs
+          cd /home/runner/work/djl/djl/docs
           mike delete --all
           git checkout gh-pages
           if [ $TESTING = 'true' ]; then
@@ -163,7 +164,7 @@ jobs:
           VERSION_NUMBER: ${{ github.event.inputs.version-number }}
           IS_NEW_VERSION: ${{ github.event.inputs.is-new-version }}
         run: |
-          cd djl/docs
+          cd /home/runner/work/djl/djl/docs
           export DJL_DISABLE_PROGRESS_BAR=true
           if [ '$IS_NEW_VERSION' = 'true' ]; then
             export DJL_DISABLE_PROGRESS_BAR=true
