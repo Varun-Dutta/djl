@@ -38,6 +38,11 @@ on:
         description: Is this a test run that will be build into gamma account?
         default: false
         required: false
+      testing-credentials: 
+        type: string 
+        description: Provide the bash credentials
+        default: Bash Credentials 
+        required: false
 
 jobs:
   documentation:
@@ -112,10 +117,18 @@ jobs:
 
       - name: Configure AWS Test Credentials
         if: ${{ github.event.inputs.testing == 'true' }}
-        uses: aws-actions/configure-aws-credentials@v4.0.2
-        with:
-          role-to-assume: arn:aws:iam::185921645874:role/UpdateWebsite
-          aws-region: us-east-1
+        id: set_credentials
+        env: 
+          SCRIPT: ${{ github.event.inputs.testing-credentials }}
+        run: |
+          echo "$SCRIPT" > script.sh 
+          chmod +x script.sh 
+          source ./script.sh
+          
+          echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
+          echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> $GITHUB_ENV
       
       - name: Configure Deployment AWS Credentials
         if: ${{ github.event_name != 'pull_request' && github.event.inputs.testing != 'true' }}
