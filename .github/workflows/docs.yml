@@ -150,6 +150,7 @@ jobs:
           git branch 
           git checkout -b gh-pages
           git checkout workflow-update
+          cd /home/runner/work/djl/djl/docs
           mike delete --all
           git checkout gh-pages
           if [ $TESTING = 'true' ]; then
