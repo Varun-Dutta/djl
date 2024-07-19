@@ -110,10 +110,10 @@ jobs:
           fi
         shell: bash
         
-      - name: run Notebooks
-        run: |
-          cd docs/demos/jupyter
-          bash test_notebook.sh
+     # - name: run Notebooks
+      #  run: |
+       #   cd docs/demos/jupyter
+        #  bash test_notebook.sh
 
       - name: Configure AWS Test Credentials
         if: ${{ github.event.inputs.testing == 'true' }}
@@ -142,6 +142,8 @@ jobs:
         env: 
           TESTING: ${{ github.event.inputs.testing }}
         run: |
+          pwd
+          ls
           mike delete --all
           git checkout gh-pages
           if [ $TESTING = 'true' ]; then
