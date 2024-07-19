@@ -141,23 +141,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      - name: Switch to gh-pages
-        uses: actions/checkout@v4
-        with: 
-          ref: gh-pages
-
       - name: Sync gh-pages
         env: 
           TESTING: ${{ github.event.inputs.testing }}
         run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git branch 
+          git checkout -b gh-pages
           if [ $TESTING = 'true' ]; then
             echo "Attempting sync"
             aws s3 sync s3://updated-documentation-website/website . 
           else
             aws s3 sync s3://djl-ai/documentation/nightly .
           fi
-          git checkout master
+          git checkout workflow-update
         shell: bash
 
         #Double Check
