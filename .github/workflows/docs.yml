@@ -75,8 +75,9 @@ jobs:
           
       - name: Create website directory
         run: |
-          cd .. 
           mkdir site
+          pwd
+          ls
 
       - name: Checkout Previous Version of DJL Repo
         if: ${{ github.event.inputs.is-new-version == 'true' }}
@@ -98,7 +99,8 @@ jobs:
           DJL_DEMO_SHA: ${{ github.event.inputs.djl-demo-tag }}
           DJL_SERVING_SHA: ${{ github.event.inputs.djl-serving-tag }}
         run: |
-          cd docs
+          pwd
+          cd djl/docs
           git clone https://github.com/deepjavalibrary/djl-demo.git demos
           git clone https://github.com/deepjavalibrary/djl-serving.git serving
           if [ "$NEW_VERSION_BOOLEAN" = "true" ]; then
@@ -144,6 +146,7 @@ jobs:
         run: |
           pwd
           ls
+          cd djl/docs
           mike delete --all
           git checkout gh-pages
           if [ $TESTING = 'true' ]; then
@@ -160,7 +163,7 @@ jobs:
           VERSION_NUMBER: ${{ github.event.inputs.version-number }}
           IS_NEW_VERSION: ${{ github.event.inputs.is-new-version }}
         run: |
-          cd docs
+          cd djl/docs
           export DJL_DISABLE_PROGRESS_BAR=true
           if [ '$IS_NEW_VERSION' = 'true' ]; then
             export DJL_DISABLE_PROGRESS_BAR=true
