@@ -187,5 +187,7 @@ jobs:
             aws s3 sync . s3://djl-ai/documentation/nightly --delete
             aws cloudfront create-invalidation --distribution-id E733IIDCG0G5U --paths "/*"
           fi
+          git checkout workflow-update
+          git delete -b gh-pages
         shell: bash
         
