@@ -155,6 +155,8 @@ jobs:
           else
             aws s3 sync s3://djl-ai/documentation/nightly .
           fi
+          git add .
+          git commit -m "Add previous website version" 
           git checkout workflow-update
         shell: bash
 
