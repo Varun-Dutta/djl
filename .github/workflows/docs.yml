@@ -185,9 +185,11 @@ jobs:
         run: |
           git checkout gh-pages
           ls
-          if ["$TESTING" = "true"]; then
+          if [ "$TESTING" = "true" ]; then
+            echo "TEST SYNC"
             aws s3 sync . s3://updated-documentation-website/website --delete
           else
+            echo "REAL SYNC"
             aws s3 sync . s3://djl-ai/documentation/nightly --delete
             aws cloudfront create-invalidation --distribution-id E733IIDCG0G5U --paths "/*"
           fi
