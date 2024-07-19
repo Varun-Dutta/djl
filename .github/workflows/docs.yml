@@ -145,9 +145,10 @@ jobs:
         env: 
           TESTING: ${{ github.event.inputs.testing }}
         run: |
+          cd /home/runner/work/djl/djl/docs
           pwd
           ls
-          cd /home/runner/work/djl/djl/docs
+          rm index.html 
           mike delete --all
           git checkout gh-pages
           if [ $TESTING = 'true' ]; then
