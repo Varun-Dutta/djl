@@ -185,7 +185,7 @@ jobs:
         run: |
           git checkout gh-pages
           ls
-          if [$TESTING = 'true']; then
+          if ["$TESTING" = "true"]; then
             aws s3 sync . s3://updated-documentation-website/website --delete
           else
             aws s3 sync . s3://djl-ai/documentation/nightly --delete
