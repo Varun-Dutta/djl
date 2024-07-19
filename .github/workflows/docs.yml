@@ -148,7 +148,8 @@ jobs:
           cd /home/runner/work/djl/djl/docs
           pwd
           ls
-          rm index.html 
+          git branch
+          mike deploy 1.0 
           mike delete --all
           git checkout gh-pages
           if [ $TESTING = 'true' ]; then
