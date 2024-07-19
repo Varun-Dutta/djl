@@ -184,6 +184,7 @@ jobs:
           TESTING: ${{ github.event.inputs.testing }}
         run: |
           git checkout gh-pages
+          ls
           if [$TESTING = 'true']; then
             aws s3 sync . s3://updated-documentation-website/website --delete
           else
