@@ -167,6 +167,7 @@ jobs:
           IS_NEW_VERSION: ${{ github.event.inputs.is-new-version }}
         run: |
           git checkout workflow-update
+          git branch
           cd /home/runner/work/djl/djl/docs
           export DJL_DISABLE_PROGRESS_BAR=true
           if [ "$IS_NEW_VERSION" = "true" ]; then
