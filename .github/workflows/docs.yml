@@ -175,6 +175,7 @@ jobs:
           else
             mike deploy dev 
             mike set-default dev
+          fi
         shell: bash
             
       - name: Copy files to S3 with the AWS CLI
