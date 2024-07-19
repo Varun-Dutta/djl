@@ -169,7 +169,6 @@ jobs:
           cd /home/runner/work/djl/djl/docs
           export DJL_DISABLE_PROGRESS_BAR=true
           if [ '$IS_NEW_VERSION' = 'true' ]; then
-            export DJL_DISABLE_PROGRESS_BAR=true
             mike deploy $VERSION_NUMBER latest
           else
             mike deploy dev 
