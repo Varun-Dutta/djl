@@ -152,6 +152,7 @@ jobs:
           mike delete --all
           git checkout gh-pages
           if [ $TESTING = 'true' ]; then
+            echo "Attempting sync"
             aws s3 sync s3://updated-documentation-website/website . 
           else
             aws s3 sync s3://djl-ai/documentation/nightly .
