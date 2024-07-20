@@ -149,6 +149,7 @@ jobs:
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git branch 
           git checkout -b gh-pages
+          git branch
           git checkout workflow-update
           cd /home/runner/work/djl/djl/docs
           mike delete --all
