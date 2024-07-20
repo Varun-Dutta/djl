@@ -147,10 +147,12 @@ jobs:
         run: |
           git config --global user.name "${GITHUB_ACTOR}"
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git branch 
+          git add . 
+          git commit -m "Standardizing Branch"
+          git checkout -b docs-branch
           git checkout -b gh-pages
           git branch
-          git checkout workflow-update
+          git checkout docs-branch
           cd /home/runner/work/djl/djl/docs
           mike delete --all
           git checkout gh-pages
@@ -162,7 +164,6 @@ jobs:
           fi
           git add .
           git commit -m "Add previous website version" 
-          ls
         shell: bash
 
         #Double Check
@@ -171,7 +172,7 @@ jobs:
           VERSION_NUMBER: ${{ github.event.inputs.version-number }}
           IS_NEW_VERSION: ${{ github.event.inputs.is-new-version }}
         run: |
-          git checkout workflow-update
+          git checkout docs-branch
           git branch
           cd /home/runner/work/djl/djl/docs
           export DJL_DISABLE_PROGRESS_BAR=true
