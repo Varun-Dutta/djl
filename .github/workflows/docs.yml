@@ -191,6 +191,7 @@ jobs:
           TESTING: ${{ github.event.inputs.testing }}
         run: |
           git checkout gh-pages
+          pwd
           ls
           if [ "$TESTING" = "true" ]; then
             echo "TEST SYNC"
