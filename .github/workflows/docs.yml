@@ -183,6 +183,7 @@ jobs:
             mike deploy dev 
             mike set-default dev
           fi
+          git branch 
         shell: bash
             
       - name: Copy files to S3 with the AWS CLI
@@ -191,6 +192,7 @@ jobs:
           TESTING: ${{ github.event.inputs.testing }}
         run: |
           git checkout gh-pages
+          git branch 
           pwd
           ls
           if [ "$TESTING" = "true" ]; then
