@@ -168,9 +168,6 @@ jobs:
           cd .. 
           if [ "$TESTING" = 'true' ]; then
             echo "Attempting sync"
-            if [ -d ./docs ]; then
-              rm -rf ./docs
-            fi
             aws s3 cp s3://updated-documentation-website/website/ ./ --recursive
           else
             aws s3 sync s3://djl-ai/documentation/nightly .
@@ -194,9 +191,10 @@ jobs:
           export DJL_DISABLE_PROGRESS_BAR=true
           if [ "$IS_NEW_VERSION" = "true" ]; then
             echo "deploying $VERSION_NUMBER"
-            mike deploy $VERSION_NUMBER latest
+            mike deploy $VERSION_NUMBER 
+            mike set-default $VERSION_NUMBER 
           else
-            mike deploy 1.0 dev 
+            mike deploy dev 
             mike set-default dev
           fi
           git branch 
@@ -209,6 +207,9 @@ jobs:
         run: |
           cd /home/runner/work/djl/djl
           git checkout gh-pages
+          if [ -d ./docs ]; then
+              rm -rf ./docs
+          fi
           git branch 
           pwd
           ls
