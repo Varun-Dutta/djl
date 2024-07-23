@@ -150,20 +150,21 @@ jobs:
           git add . 
           git commit -m "Standardizing Branch"
           git checkout -b docs-branch
-          git checkout -b gh-pages
-          git branch
-          git checkout docs-branch
+          git checkout branch gh-pages
           cd /home/runner/work/djl/djl/docs
           mike delete --all
           git checkout gh-pages
-          if [ $TESTING = 'true' ]; then
+          cd .. 
+          if [ "$TESTING" = 'true' ]; then
             echo "Attempting sync"
-            aws s3 sync s3://updated-documentation-website/website . 
+            if [ -d ./docs ]; then
+              rm -rf ./docs
+            fi
+            aws s3 cp s3://updated-documentation-website/website/ ./ --recursive
           else
             aws s3 sync s3://djl-ai/documentation/nightly .
           fi
-          git add .
-          git commit -m "Add previous website version" 
+          git checkout docs-branch
         shell: bash
 
         #Double Check
@@ -172,8 +173,6 @@ jobs:
           VERSION_NUMBER: ${{ github.event.inputs.version-number }}
           IS_NEW_VERSION: ${{ github.event.inputs.is-new-version }}
         run: |
-          git checkout docs-branch
-          git branch
           cd /home/runner/work/djl/djl/docs
           export DJL_DISABLE_PROGRESS_BAR=true
           if [ "$IS_NEW_VERSION" = "true" ]; then
@@ -197,7 +196,7 @@ jobs:
           ls
           if [ "$TESTING" = "true" ]; then
             echo "TEST SYNC"
-            aws s3 sync . s3://updated-documentation-website/website --delete
+              aws s3 sync . s3://updated-documentation-website/website/ --exclude ".*" --delete
           else
             echo "REAL SYNC"
             aws s3 sync . s3://djl-ai/documentation/nightly --delete
