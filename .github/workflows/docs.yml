@@ -150,8 +150,8 @@ jobs:
           git add . 
           git commit -m "Standardizing Branch"
           git checkout -b docs-branch
-          git checkout branch gh-pages
           cd /home/runner/work/djl/djl/docs
+          git branch gh-pages
           mike delete --all
           git checkout gh-pages
           cd .. 
