@@ -61,8 +61,8 @@ jobs:
         with:
           python-version: '3.x'
           
-   #   - name: Install CN fonts
-    #    run: sudo apt-get update && sudo apt-get install fonts-arphic-uming
+      - name: Install CN fonts
+        run: sudo apt-get update && sudo apt-get install fonts-arphic-uming
         
       - name: install Python Dependencies
         run: pip3 install nbconvert mkdocs==1.4.3 mkdocs-exclude mknotebooks mkdocs-material jupyter Pygments Markdown mike
