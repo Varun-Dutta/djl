@@ -101,7 +101,12 @@ jobs:
           DJL_SERVING_SHA: ${{ github.event.inputs.djl-serving-tag }}
         run: |
           pwd
-          cd /home/runner/work/djl/djl/docs
+          cd /home/runner/work/djl/djl
+          rm index.html
+          git add . 
+          git commit -m "Removed index.html" 
+          
+          cd docs
           git clone https://github.com/deepjavalibrary/djl-demo.git demos
           git clone https://github.com/deepjavalibrary/djl-serving.git serving
           if [ "$NEW_VERSION_BOOLEAN" = "true" ]; then
