@@ -77,8 +77,6 @@ jobs:
         run: |
           cd /home/runner/work/djl
           mkdir site
-          pwd
-          ls
 
       - name: Checkout Previous Version of DJL Repo
         if: ${{ github.event.inputs.is-new-version == 'true' }}
@@ -170,7 +168,7 @@ jobs:
             echo "Attempting sync"
             aws s3 cp s3://updated-documentation-website/website/ ./ --recursive
           else
-            aws s3 sync s3://djl-ai/documentation/nightly .
+            aws s3 cp s3://djl-ai/documentation/nightly ./ --recursive
           fi
 
           git add . 
@@ -185,7 +183,6 @@ jobs:
           IS_NEW_VERSION: ${{ github.event.inputs.is-new-version }}
         run: |
           cd /home/runner/work/djl/djl
-          #rm index.html 
           
           cd docs
           export DJL_DISABLE_PROGRESS_BAR=true
@@ -218,7 +215,7 @@ jobs:
               aws s3 sync . s3://updated-documentation-website/website/ --exclude ".*" --delete
           else
             echo "REAL SYNC"
-            aws s3 sync . s3://djl-ai/documentation/nightly --delete
+            aws s3 sync . s3://djl-ai/documentation/nightly --exclude ".*" --delete
             aws cloudfront create-invalidation --distribution-id E733IIDCG0G5U --paths "/*"
           fi
         shell: bash
