@@ -188,7 +188,7 @@ jobs:
           IS_NEW_VERSION: ${{ github.event.inputs.is-new-version }}
         run: |
           cd /home/runner/work/djl/djl
-          rm index.html 
+          #rm index.html 
           
           cd docs
           export DJL_DISABLE_PROGRESS_BAR=true
