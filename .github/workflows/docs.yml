@@ -50,11 +50,11 @@ jobs:
     if: github.repository == 'Varun-Dutta/djl'  
     runs-on: ubuntu-latest
     steps:
-    #  - name: Set up JDK 17
-     #   uses: actions/setup-java@v4
-      #  with:
-       #   distribution: 'corretto'
-        #  java-version: 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: 17
           
       - name: Set up Python3
         uses: actions/setup-python@v5
@@ -67,11 +67,11 @@ jobs:
       - name: install Python Dependencies
         run: pip3 install nbconvert mkdocs==1.4.3 mkdocs-exclude mknotebooks mkdocs-material jupyter Pygments Markdown mike
         
-    #  - name: Install IJava kernel
-     #   run: |
-      #    git clone https://github.com/frankfliu/IJava.git
-       #   cd IJava/
-        #  ./gradlew installKernel
+      - name: Install IJava kernel
+        run: |
+          git clone https://github.com/frankfliu/IJava.git
+          cd IJava/
+          ./gradlew installKernel
           
       - name: Create website directory
         run: |
@@ -121,10 +121,10 @@ jobs:
           fi
         shell: bash
         
-     # - name: run Notebooks
-      #  run: |
-       #   cd docs/demos/jupyter
-        #  bash test_notebook.sh
+      - name: run Notebooks
+        run: |
+          cd docs/demos/jupyter
+          bash test_notebook.sh
 
       - name: Configure AWS Test Credentials
         if: ${{ github.event.inputs.testing == 'true' }}
