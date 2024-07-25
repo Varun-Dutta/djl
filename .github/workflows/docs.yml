@@ -49,30 +49,15 @@ jobs:
     # Change line below 
     if: github.repository == 'Varun-Dutta/djl'  
     runs-on: ubuntu-latest
-    steps:
-      - name: Cache Java
-        id: java-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/Java
-          key: ${{ runner.os }}-java
-          
+    steps:  
       - name: Set up JDK 17
-        if: steps.java-cache.outputs.cache-hit != 'true'
         uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
           java-version: 17
-
-      - name: Cache Python
-        id: python-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/Python
-          key: ${{ runner.os }}-python
+          cache: 'maven' 
 
       - name: Set up Python
-        if: steps.python-cache.outputs.cache-hit != 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
@@ -81,8 +66,8 @@ jobs:
         id: python-packages-cache
         uses: actions/cache@v4
         with:
-          path: ~/.cache/Python-Packages
-          key: ${{ runner.os }}-python-packages
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip--${{ hashFiles('**/requirements.txt') }}
 
       - name: Install Python Dependencies
         if: steps.python-packages-cache.outputs.cache-hit != 'true'
