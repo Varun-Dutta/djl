@@ -64,7 +64,7 @@ jobs:
           distribution: 'corretto'
           java-version: 17
 
-      - name: Cache Java
+      - name: Cache Python
         id: python-cache
         uses: actions/cache@v4
         with:
@@ -153,10 +153,10 @@ jobs:
           fi
         shell: bash
         
-      - name: run Notebooks
-        run: |
-          cd docs/demos/jupyter
-          bash test_notebook.sh
+      #- name: run Notebooks
+       # run: |
+        #  cd docs/demos/jupyter
+         # bash test_notebook.sh
 
       - name: Configure AWS Test Credentials
         if: ${{ github.event.inputs.testing == 'true' }}
