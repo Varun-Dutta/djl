@@ -50,6 +50,7 @@ jobs:
     if: github.repository == 'Varun-Dutta/djl'  
     runs-on: ubuntu-latest
     steps:  
+    #Phase I: Prepare Dependencies 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -80,7 +81,8 @@ jobs:
           git clone https://github.com/frankfliu/IJava.git
           cd IJava/
           ./gradlew installKernel
-          
+
+      #Phase II: Consolidate the Source Files     
       - name: Create website directory
         run: |
           cd /home/runner/work/djl
@@ -139,6 +141,7 @@ jobs:
         #  cd docs/demos/jupyter
          # bash test_notebook.sh
 
+      #Phase III: Retrive Current Website
       - name: Configure AWS Test Credentials
         if: ${{ github.event.inputs.testing == 'true' }}
         id: set_credentials
@@ -191,7 +194,7 @@ jobs:
           git checkout docs-branch
         shell: bash
 
-        #Double Check
+      # Phase IV: Build New Website
       - name: build docs
         env:
           VERSION_NUMBER: ${{ github.event.inputs.version-number }}
@@ -211,7 +214,8 @@ jobs:
           fi
           git branch 
         shell: bash
-            
+        
+      # Phase V: Deploy Website 
       - name: Copy files to S3 with the AWS CLI
         if: github.event_name != 'pull_request'
         env:
