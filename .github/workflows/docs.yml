@@ -103,27 +103,30 @@ jobs:
           git commit -m "Removed index.html" || echo "No changes to commit"
         shell: bash
 
-      - name: Clone DJL-Serving 
+      - name: Clone DJL-Serving
         env:
-          IS_NEW_VERSION:  ${{ github.event.inputs.is-new-version }}
+          IS_NEW_VERSION: ${{ github.event.inputs.is-new-version }}
+          DJL_SERVING_TAG: ${{ github.event.inputs.djl-serving-tag }}
         run: |
           cd /home/runner/work/djl/djl/docs
           git clone https://github.com/deepjavalibrary/djl-serving.git serving
           cd serving
           if [ "$IS_NEW_VERSION" = "true" ]; then
-            git checkout "${{ github.event.inputs.djl_serving_tag }}"
+            git checkout "$DJL_SERVING_TAG"
           fi
         shell: bash
+
 
       - name: Clone DJL-Demo 
         env:
           IS_NEW_VERSION:  ${{ github.event.inputs.is-new-version }}
+          DJL_DEMO_TAG: ${{ github.event.inputs.djl-demo-tag }}
         run: |
           cd /home/runner/work/djl/djl/docs
           git clone https://github.com/deepjavalibrary/djl-demo.git demos
           cd demos
           if [ "$IS_NEW_VERSION" = "true" ]; then
-            git checkout ${{ github.event.inputs.djl-demo-tag }}
+            git checkout "$DJL_DEMO_TAG"
           fi
         shell: bash
         
