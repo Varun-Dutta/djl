@@ -120,28 +120,34 @@ jobs:
       - name: Checkout DJL Repo
         uses: actions/checkout@v4
         with: 
-          ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-tag || 'main' }}
+        ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-tag || 'main' }}
 
-      - name: Clone DJL-Serving
+      - name: Delete index.html 
+        run: |
+          rm -f index.html    
+          git add -u 
+          git commit -m "Removed index.html" || echo "No changes to commit"
+        shell: bash
+
+      - name: Clone DJL-Serving into temp directory
         uses: actions/checkout@v4
         with:
           repository: deepjavalibrary/djl-serving
-          path: home/runner/work/djl/djl/docs/serving
-          ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-serving-tag|| 'main' }}
+          path: ${{ runner.temp }}/djl-serving
+          ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-serving-tag || 'main' }}
 
-      - name: Clone DJL-Demo
+      - name: Clone DJL-Demo into temp directory
         uses: actions/checkout@v4
         with:
           repository: deepjavalibrary/djl-demo
-          path: home/runner/work/djl/djl/docs/demos
+          path: ${{ runner.temp }}/djl-demo
           ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-demo-tag || 'main' }}
-          
-      - name: Delete index.html 
+
+      - name: Copy necessary files
         run: |
-          cd /home/runner/work/djl/djl
-          rm index.html    
-          git add . 
-          git commit -m "Removed index.html" 
+          mkdir -p docs/serving docs/demos
+          rsync -av --progress ${{ runner.temp }}/djl-serving/ docs/serving/ --exclude .git || { echo "rsync failed for djl-serving"; exit 1; }
+          rsync -av --progress ${{ runner.temp }}/djl-demo/ docs/demos/ --exclude .git || { echo "rsync failed for djl-demo"; exit 1; }
         shell: bash
 
       - name: Add mybinder link
