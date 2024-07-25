@@ -1,5 +1,5 @@
 name: Docs
-
+#This workflow automates updating the dev version of the documentation website and the deployment of new versions of the document website. 
 on:
   pull_request:
     paths:
@@ -50,7 +50,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         
-    #Phase I: Prepare Dependencies 
+    #Phase I: Prepare Dependencies
+    #This phase sets up all of the necessary dependencies. This includes authenticating the workflow, installing Java and Python, and adding the tools used to build the documentation website.  
+      - name: Configure AWS Test Credentials
+        if: ${{ github.event.inputs.testing == 'true' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with: 
+          audience: sts.amazonaws.com
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::185921645874:role/UpdateWebsite
+          role-session-name: UpdateWebsite
+      
+      - name: Configure Deployment AWS Credentials
+        if: ${{ github.event_name != 'pull_request' && github.event.inputs.testing != 'true' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+          
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -62,7 +80,7 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: install Python Dependencies
+      - name: Install Python Dependencies
         run: pip3 install nbconvert mkdocs==1.4.3 mkdocs-exclude mknotebooks mkdocs-material jupyter Pygments Markdown mike
         
       - name: Install CN fonts
@@ -82,7 +100,9 @@ jobs:
           cd IJava/
           ./gradlew installKernel
 
-      #Phase II: Consolidate the Source Files     
+      #Phase II: Consolidate the Source Files
+      #This phase consolidates all of the source files (i.e. Markdown files and Jupyter Notebooks) that are converted into the html files that form the documenetation website. 
+      #These files are split across the DJL, DJL-Demo, and DJL-Serving Repository. They need to be consolidated locallay and inaccordance with paths specified in the mkdocs.yml file in djl/docs.
       - name: Create website directory
         run: |
           cd /home/runner/work/djl
@@ -98,6 +118,8 @@ jobs:
         with: 
           ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-tag || 'master' }}
 
+        #This step is necessary because the index.html file in djl/index.html overwrites the index.html file Mike create for the landing page
+        #This is problematic because this index.html corresponds to the djl website rather than the docs website.
       - name: Delete index.html 
         run: |
           rm -f index.html    
@@ -136,29 +158,14 @@ jobs:
         run: |
           python3 tools/scripts/add_online_runner.py
         
-      #- name: run Notebooks
-       # run: |
-        #  cd docs/demos/jupyter
-         # bash test_notebook.sh
+      - name: run Notebooks
+        run: |
+          cd docs/demos/jupyter
+          bash test_notebook.sh
 
       #Phase III: Retrive Current Website
-      - name: Configure AWS Test Credentials
-        if: ${{ github.event.inputs.testing == 'true' }}
-        uses: aws-actions/configure-aws-credentials@v4
-        with: 
-          audience: sts.amazonaws.com
-          aws-region: us-east-1
-          role-to-assume: arn:aws:iam::185921645874:role/UpdateWebsite
-          role-session-name: UpdateWebsite
-      
-      - name: Configure Deployment AWS Credentials
-        if: ${{ github.event_name != 'pull_request' && github.event.inputs.testing != 'true' }}
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
-
+      #This phase retrieves the current version of the website that is stored in S3. The key pieces are the index.html and versions.json which serve as the landing page and the tracker of previous versions. 
+      #Potential Improvement: See if mike still works if only downloading the index.html file and versions.json rather than the entire previous website. 
       - name: Sync gh-pages
         env: 
           TESTING: ${{ github.event.inputs.testing }}
@@ -188,6 +195,7 @@ jobs:
         shell: bash
 
       # Phase IV: Build New Website
+      #This phase invokes mike to build the new website. How it invokes mike depends on the parameters passed when the work flow is run. The default behavior is to update the dev version of the website. 
       - name: build docs
         env:
           VERSION_NUMBER: ${{ github.event.inputs.version-number }}
@@ -209,6 +217,7 @@ jobs:
         shell: bash
         
       # Phase V: Deploy Website 
+      #This phase deploys the website to the S3 Bucket. If this is a test, the website is uploaded to Gamma. Otherwise it is uploaded to produciton. 
       - name: Copy files to S3 with the AWS CLI
         if: github.event_name != 'pull_request'
         env:
