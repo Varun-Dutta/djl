@@ -61,20 +61,34 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Cache Python Packages  
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Create requirements file
+        run: |
+          echo "nbconvert" > requirements.txt
+          echo "mkdocs==1.4.3" >> requirements.txt
+          echo "mkdocs-exclude" >> requirements.txt
+          echo "mknotebooks" >> requirements.txt
+          echo "mkdocs-material" >> requirements.txt
+          echo "jupyter" >> requirements.txt
+          echo "Pygments" >> requirements.txt
+          echo "Markdown" >> requirements.txt
+          echo "mike" >> requirements.txt
+
+      - name: Cache Python Packages
         id: python-packages-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
       - name: Install Python Dependencies
-        if: steps.python-packages-cache.outputs.cache-hit != 'true'
         run: |
-          pip install nbconvert mkdocs==1.4.3 mkdocs-exclude mknotebooks mkdocs-material jupyter Pygments Markdown mike
-          pip freeze > requirements.txt
+          pip install -r requirements.txt
+          pip freeze > installed_requirements.txt
 
       - name: Install CN fonts
         run: sudo apt-get update && sudo apt-get install fonts-arphic-uming
