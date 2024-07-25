@@ -11,12 +11,12 @@ on:
     inputs:
       testing:
         type: boolean
-        description: Is this a test run that will be build into gamma account?
+        description: Is this a test run that will be built into gamma account?
         default: false
         required: false
       is-new-version:
         type: boolean
-        description: Deploying new version? If not, skip the rest of the parameters. 
+        description: Are you deploying new version? If so, enter the new version number (ex. 28.0). If not, skip the rest of the parameters. 
         default: false
         required: true
       version-number:
