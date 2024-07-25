@@ -50,12 +50,19 @@ jobs:
     if: github.repository == 'Varun-Dutta/djl'  
     runs-on: ubuntu-latest
     steps:
+      - name: Cache Java
+        id: java-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Java
+          key: ${{ runner.os }}-java
+          
       - name: Set up JDK 17
+        if: steps.java-cache.outputs.cache-hit != 'true'
         uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
           java-version: 17
-          cache: 'gradle'  # This caches Gradle dependencies
 
       - name: Set up Python
         uses: actions/setup-python@v5
