@@ -43,8 +43,11 @@ on:
         description: Provide the bash credentials
         default: Bash Credentials 
         required: false
-
-jobs:
+permissions:
+  id-token: write 
+  contents: read 
+  
+jobs:    
   documentation:
     # Change line below 
     if: github.repository == 'Varun-Dutta/djl'  
