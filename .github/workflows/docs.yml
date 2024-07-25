@@ -64,15 +64,28 @@ jobs:
           distribution: 'corretto'
           java-version: 17
 
+      - name: Cache Java
+        id: python-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Python
+          key: ${{ runner.os }}-python
+
       - name: Set up Python
+        if: steps.python-cache.outputs.cache-hit != 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-          cache: 'pip'
-          cache-dependency-path: |
-            **/requirements.txt
+
+      - name: Cache Python Packages  
+        id: python-packages-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Python-Packages
+          key: ${{ runner.os }}-python-packages
 
       - name: Install Python Dependencies
+        if: steps.python-packages-cache.outputs.cache-hit != 'true'
         run: |
           pip install nbconvert mkdocs==1.4.3 mkdocs-exclude mknotebooks mkdocs-material jupyter Pygments Markdown mike
           pip freeze > requirements.txt
