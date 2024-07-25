@@ -94,7 +94,7 @@ jobs:
       - name: Checkout DJL Repo
         uses: actions/checkout@v4
         with: 
-        ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-tag || 'main' }}
+          ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-tag || 'main' }}
 
       - name: Delete index.html 
         run: |
