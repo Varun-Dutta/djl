@@ -86,15 +86,9 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
       - name: Install Python Dependencies
-        if: steps.python-packages-cache.outputs.cache-hit != 'true'
         run: |
           pip install -r requirements.txt
           pip freeze > installed_requirements.txt
-
-      - name: Verify Python Environment
-        run: |
-          pip list
-          pip check
 
       - name: Install CN fonts
         run: sudo apt-get update && sudo apt-get install fonts-arphic-uming
