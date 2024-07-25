@@ -149,7 +149,7 @@ jobs:
           audience: sts.amazonaws.com
           aws-region: us-east-1
           role-to-assume: arn:aws:iam::185921645874:role/UpdateWebsite
-          role-seesion-name: UpdateWebsite
+          role-session-name: UpdateWebsite
       
       - name: Configure Deployment AWS Credentials
         if: ${{ github.event_name != 'pull_request' && github.event.inputs.testing != 'true' }}
@@ -163,13 +163,12 @@ jobs:
         env: 
           TESTING: ${{ github.event.inputs.testing }}
         run: |
-          git config --global user.name "${GITHUB_ACTOR}"
-          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git add . 
-          git commit -m "Standardizing Branch"
-          
+          #git config --global user.name "${GITHUB_ACTOR}"
+          #git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          #git add . 
+          #git commit -m "Standardizing Branch"
+
           git checkout -b docs-branch
-          
           cd /home/runner/work/djl/djl/docs
           git branch gh-pages
           mike delete --all
