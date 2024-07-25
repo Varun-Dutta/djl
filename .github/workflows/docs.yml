@@ -116,36 +116,36 @@ jobs:
           cd /home/runner/work/djl
           mkdir site
 
+      - name: Set-up Git Config:
+        run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
       - name: Checkout DJL Repo
         uses: actions/checkout@v4
         with: 
           ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-tag || 'main' }}
+
+      - name: Clone DJL-Serving
+        uses: actions/checkout@v4
+        with:
+          repository: deepjavalibrary/djl-serving
+          path: home/runner/work/djl/djl/docs/serving
+          ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-serving-tag|| 'main' }}
+
+      - name: Clone DJL-Demo
+        uses: actions/checkout@v4
+        with:
+          repository: deepjavalibrary/djl-demo
+          path: home/runner/work/djl/djl/docs/demos
+          ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-demo-tag || 'main' }}
           
-      - name: Clone DJL-Serving and DJL Demos
-        env:
-          NEW_VERSION_BOOLEAN: ${{ github.event.inputs.is-new-version }}
-          DJL_DEMO_SHA: ${{ github.event.inputs.djl-demo-tag }}
-          DJL_SERVING_SHA: ${{ github.event.inputs.djl-serving-tag }}
+      - name: Delete index.html 
         run: |
-          pwd
           cd /home/runner/work/djl/djl
-          rm index.html
-          git config --global user.name "${GITHUB_ACTOR}"
-          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          
+          rm index.html    
           git add . 
           git commit -m "Removed index.html" 
-          
-          cd docs
-          git clone https://github.com/deepjavalibrary/djl-demo.git demos
-          git clone https://github.com/deepjavalibrary/djl-serving.git serving
-          if [ "$NEW_VERSION_BOOLEAN" = "true" ]; then
-            cd demos
-            git checkout $DJL_DEMO_SHA
-            cd ../serving
-            git checkout $DJL_SERVING_SHA
-            cd ..
-          fi
         shell: bash
         
       #- name: run Notebooks
