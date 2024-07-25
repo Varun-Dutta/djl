@@ -90,6 +90,10 @@ jobs:
           pip install -r requirements.txt
           pip freeze > installed_requirements.txt
 
+      - name: Add mybinder link
+        run: |
+          python3 tools/scripts/add_online_runner.py
+
       - name: Install CN fonts
         run: sudo apt-get update && sudo apt-get install fonts-arphic-uming
 
@@ -112,19 +116,10 @@ jobs:
           cd /home/runner/work/djl
           mkdir site
 
-      - name: Checkout Previous Version of DJL Repo
-        if: ${{ github.event.inputs.is-new-version == 'true' }}
+      - name: Checkout DJL Repo
         uses: actions/checkout@v4
         with: 
-          ref: ${{ github.event.inputs.djl-tag }}
-          
-      - name: Checkout Current Version of DJL Repo
-        if: ${{ github.event.inputs.is-new-version == 'false' }}
-        uses: actions/checkout@v4
-        
-      - name: Add mybinder link
-        run: |
-          python3 tools/scripts/add_online_runner.py
+          ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-tag || 'main' }}
           
       - name: Clone DJL-Serving and DJL Demos
         env:
