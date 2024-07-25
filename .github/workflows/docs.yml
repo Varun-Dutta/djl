@@ -107,7 +107,8 @@ jobs:
         env:
           IS_NEW_VERSION:  ${{ github.event.inputs.is-new-version }}
         run: |
-          git clone https://github.com/deepjavalibrary/djl-serving.git docs/serving
+          cd /home/runner/work/djl/djl/docs
+          git clone https://github.com/deepjavalibrary/djl-serving.git serving
           cd docs/serving
           if [ "$IS_NEW_VERSION" = "true" ]; then
             git checkout "${{ github.event.inputs.djl_serving_tag }}"
@@ -119,7 +120,8 @@ jobs:
         env:
           IS_NEW_VERSION:  ${{ github.event.inputs.is-new-version }}
         run: |
-          git clone https://github.com/deepjavalibrary/djl-demo.git docs/demos
+          cd /home/runner/work/djl/djl/docs
+          git clone https://github.com/deepjavalibrary/djl-demo.git demos
           cd docs/demos
           if [ "$IS_NEW_VERSION" = "true" ]; then
             git checkout ${{ github.event.inputs.djl-demo-tag }}
