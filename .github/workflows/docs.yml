@@ -66,8 +66,10 @@ jobs:
         run: |
           mkdir test
           cd test 
-          aws s3 cp s3://updated-documentation-website/website/ ./ --recursive
+          aws s3 cp s3://updated-documentation-website/website/index.html ./ 
           ls
+          echo "test" > test.txt
+          aws s3 cp ./test.txt s3://updated-documentation-website/website
         shell: bash 
         
     #Phase I: Prepare Dependencies 
