@@ -9,9 +9,14 @@ on:
     - cron:  '0 9 * * 1'
   workflow_dispatch:
     inputs:
+      testing:
+        type: boolean
+        description: Is this a test run that will be build into gamma account?
+        default: false
+        required: false
       is-new-version:
         type: boolean
-        description: Deploying new version? If not, skip the next four parameters. 
+        description: Deploying new version? If not, skip the rest of the parameters. 
         default: false
         required: true
       version-number:
@@ -33,16 +38,7 @@ on:
         description: The commit SHA (e.g. 6b642e1) for the version of djl-demo. 
         default: 'DJL Demo SHA'
         required: false
-      testing:
-        type: boolean
-        description: Is this a test run that will be build into gamma account?
-        default: false
-        required: false
-      testing-credentials: 
-        type: string 
-        description: Provide the bash credentials
-        default: Bash Credentials 
-        required: false
+      
 permissions:
   id-token: write 
   contents: read 
@@ -53,24 +49,6 @@ jobs:
     if: github.repository == 'Varun-Dutta/djl'  
     runs-on: ubuntu-latest
     steps:
-      - name: Configure AWS Test Credentials
-        if: ${{ github.event.inputs.testing == 'true' }}
-        uses: aws-actions/configure-aws-credentials@v4
-        with: 
-          audience: sts.amazonaws.com
-          aws-region: us-east-1
-          role-to-assume: arn:aws:iam::185921645874:role/UpdateWebsite
-          role-seesion-name: UpdateWebsite
-
-      - name: Test 
-        run: |
-          mkdir test
-          cd test 
-          aws s3 cp s3://updated-documentation-website/website/index.html ./ 
-          ls
-          echo "This is an emergency, paging Dr. Beat" > test.txt
-          aws s3 cp ./test.txt s3://updated-documentation-website/website/
-        shell: bash 
         
     #Phase I: Prepare Dependencies 
       - name: Set up JDK 17
@@ -164,20 +142,14 @@ jobs:
          # bash test_notebook.sh
 
       #Phase III: Retrive Current Website
-     # - name: Configure AWS Test Credentials
-      #  if: ${{ github.event.inputs.testing == 'true' }}
-       # id: set_credentials
-        #env: 
-         # SCRIPT: ${{ github.event.inputs.testing-credentials }}
-        #run: |
-         # echo "$SCRIPT" > script.sh 
-          #chmod +x script.sh 
-          #source ./script.sh
-          
-          #echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
-          #echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> $GITHUB_ENV
-          #echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
-          #echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> $GITHUB_ENV
+      - name: Configure AWS Test Credentials
+        if: ${{ github.event.inputs.testing == 'true' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with: 
+          audience: sts.amazonaws.com
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::185921645874:role/UpdateWebsite
+          role-seesion-name: UpdateWebsite
       
       - name: Configure Deployment AWS Credentials
         if: ${{ github.event_name != 'pull_request' && github.event.inputs.testing != 'true' }}
