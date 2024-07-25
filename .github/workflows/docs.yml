@@ -90,10 +90,6 @@ jobs:
           pip install -r requirements.txt
           pip freeze > installed_requirements.txt
 
-      - name: Add mybinder link
-        run: |
-          python3 tools/scripts/add_online_runner.py
-
       - name: Install CN fonts
         run: sudo apt-get update && sudo apt-get install fonts-arphic-uming
 
@@ -147,6 +143,10 @@ jobs:
           git add . 
           git commit -m "Removed index.html" 
         shell: bash
+
+      - name: Add mybinder link
+        run: |
+          python3 tools/scripts/add_online_runner.py
         
       #- name: run Notebooks
        # run: |
