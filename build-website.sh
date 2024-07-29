@@ -20,6 +20,7 @@ done
 echo "TESTING set to $TESTING."
 
 #Create and Sync gh-pages for Mike 
+git checkout -b docs-update
 git branch gh-pages 
 mike delete --all 
 git checkout gh-pages 
@@ -37,14 +38,9 @@ fi
 #TEST REMOVING THIS 
 git add . 
 git commit -m "Sync Finished" 
-git checkout master
+git checkout docs-update
+cd docs
 
-echo "*********"
-git branch 
-ls
-echo "*********"
-
-cd docs 
 echo "deploying $VERSION_NUMBER"
 if [ "$VERSION_NUMBER" != "master" ]; then
   mike deploy $VERSION_NUMBER 
@@ -56,6 +52,7 @@ fi
 
 #Upload New Artificats
 git checkout gh-pages
+cd .. 
 echo "Syncing..."
 if [ "$TESTING" = "true" ]; then
   aws s3 cp ./index.html s3://updated-documentation-website/website/ 
