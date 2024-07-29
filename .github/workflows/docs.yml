@@ -2,8 +2,6 @@ name: Docs
 #This workflow automates updating the dev version of the documentation website and the deployment of new versions of the document website. 
 on:
   pull_request:
-    paths:
-      - "docs/mkdocs.yml"
   # Publish docs weekly
   schedule:
     - cron:  '0 9 * * 1'
