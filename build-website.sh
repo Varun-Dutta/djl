@@ -39,6 +39,11 @@ git add .
 git commit -m "Sync Finished" 
 git checkout master
 
+echo "*********"
+git branch 
+ls
+echo "*********"
+
 cd docs 
 echo "deploying $VERSION_NUMBER"
 if [ "$VERSION_NUMBER" != "master" ]; then
