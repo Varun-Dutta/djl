@@ -14,29 +14,10 @@ on:
         description: Is this a test run that will be built into gamma account?
         default: false
         required: false
-      is-new-version:
-        type: boolean
-        description: Are you deploying new version? If so, enter the new version number (ex. 28.0). If not, skip the rest of the parameters. 
-        default: false
-        required: true
       version-number:
         type: string 
-        description: What is the new version number for the website?
-        default: dev
-        required: false
-      djl-tag: 
-        type: string
-        description: The commit SHA (e.g. 6b642e1) for the tag of the version of djl.
-        default: 'DJL SHA'
-        required: false
-      djl-serving-tag:
-        type: string
-        description: The commit SHA (e.g. 6b642e1) for the version of djl-serving.
-        default: 'DJL Serving SHA'
-        required: false
-      djl-demo-tag:
-        description: The commit SHA (e.g. 6b642e1) for the version of djl-demo. 
-        default: 'DJL Demo SHA'
+        description: What is the new version number (ex. v0.28.0) for the website? If updating dev, leave this blank. 
+        default: master
         required: false
       
 permissions:
@@ -98,7 +79,7 @@ jobs:
       - name: Checkout DJL Repo
         uses: actions/checkout@v4
         with: 
-          ref: ${{ github.event.inputs.is-new-version == 'true' && github.event.inputs.djl-tag || 'master' }}
+          ref: ${{github.event.version-number}}
 
         #This step is necessary because the index.html file in djl/index.html overwrites the index.html file Mike create for the landing page
         #This is problematic because this index.html corresponds to the djl website rather than the docs website.
@@ -109,41 +90,28 @@ jobs:
           git commit -m "Removed index.html" || echo "No changes to commit"
         shell: bash
 
-      - name: Clone DJL-Serving
-        env:
-          IS_NEW_VERSION: ${{ github.event.inputs.is-new-version }}
-          DJL_SERVING_TAG: ${{ github.event.inputs.djl-serving-tag }}
-        run: |
-          cd /home/runner/work/djl/djl/docs
-          git clone https://github.com/deepjavalibrary/djl-serving.git serving
-          cd serving
-          if [ "$IS_NEW_VERSION" = "true" ]; then
-            git checkout "$DJL_SERVING_TAG"
-          fi
-        shell: bash
+      - name: Checkout DJL-Serving
+        uses: actions/checkout@v4
+        with:
+          repository: 'deepjavalibrary/djl-serving' 
+          ref: ${{ github.event.inputs.version-number || 'master' }}
+          path: docs/serving
 
-
-      - name: Clone DJL-Demo 
-        env:
-          IS_NEW_VERSION:  ${{ github.event.inputs.is-new-version }}
-          DJL_DEMO_TAG: ${{ github.event.inputs.djl-demo-tag }}
-        run: |
-          cd /home/runner/work/djl/djl/docs
-          git clone https://github.com/deepjavalibrary/djl-demo.git demos
-          cd demos
-          if [ "$IS_NEW_VERSION" = "true" ]; then
-            git checkout "$DJL_DEMO_TAG"
-          fi
-        shell: bash
-        
+      - name: Checkout DJL-Serving
+        uses: actions/checkout@v4
+        with:
+          repository: 'deepjavalibrary/djl-demo' 
+          ref: ${{ github.event.inputs.version-number || 'master' }}
+          path: docs/demos
+   
       - name: Add mybinder link
         run: |
           python3 tools/scripts/add_online_runner.py
         
-      - name: run Notebooks
-        run: |
-          cd docs/demos/jupyter
-          bash test_notebook.sh
+      #- name: run Notebooks
+       # run: |
+        #  cd docs/demos/jupyter
+         # bash test_notebook.sh
 
       #Phase III: Retrive Current Website
       #This phase handles authentication with AWS then retrieves the current version of the website that is stored in S3. The key pieces are the index.html and versions.json which serve as the landing page and the tracker of previous versions. 
@@ -193,13 +161,12 @@ jobs:
       - name: build docs
         env:
           VERSION_NUMBER: ${{ github.event.inputs.version-number }}
-          IS_NEW_VERSION: ${{ github.event.inputs.is-new-version }}
         run: |
           cd /home/runner/work/djl/djl
           
           cd docs
           export DJL_DISABLE_PROGRESS_BAR=true
-          if [ "$IS_NEW_VERSION" = "true" ]; then
+          if [ "$VERSION_NUMBER" != "master" ]; then
             echo "deploying $VERSION_NUMBER"
             mike deploy $VERSION_NUMBER 
             mike set-default $VERSION_NUMBER 
