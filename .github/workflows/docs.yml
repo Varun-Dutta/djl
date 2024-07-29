@@ -67,15 +67,10 @@ jobs:
           cd /home/runner/work/djl
           mkdir site
 
-      - name: Set-up Git Config
-        run: |
-          git config --global user.name "${GITHUB_ACTOR}"
-          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-
       - name: Checkout DJL Repo
         uses: actions/checkout@v4
         with: 
-          ref: ${{github.event.version-number}}
+          ref: ${{ github.event.version-number }}
 
         #This step is necessary because the index.html file in djl/index.html overwrites the index.html file Mike create for the landing page
         #This is problematic because this index.html corresponds to the djl website rather than the docs website.
@@ -122,72 +117,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
           
-      - name: Sync gh-pages
+      - name: Build New Version 
         env: 
-          TESTING: ${{ github.event.inputs.testing }}
+          TESTING_FLAG: ${{ github.event.inputs.testing }}
         run: |
-          git checkout -b docs-branch
-          cd /home/runner/work/djl/djl/docs
-          git branch gh-pages
-          mike delete --all
-          
-          git checkout gh-pages
-          cd .. 
-          if [ "$TESTING" = 'true' ]; then
-            echo "Attempting sync"
-            aws s3 cp s3://updated-documentation-website/website/ ./ --recursive
-          else
-            aws s3 cp s3://djl-ai/documentation/nightly ./ --recursive
-          fi
-
-          git add . 
-          git commit -m "Synced gh-pages with S3"
-          git checkout docs-branch
-        shell: bash
-
-      # Phase IV: Build New Website
-      #This phase invokes mike to build the new website. How it invokes mike depends on the parameters passed when the work flow is run. The default behavior is to update the dev version of the website. 
-      - name: build docs
-        env:
-          VERSION_NUMBER: ${{ github.event.inputs.version-number }}
-        run: |
-          cd /home/runner/work/djl/djl
-          
-          cd docs
-          export DJL_DISABLE_PROGRESS_BAR=true
-          if [ "$VERSION_NUMBER" != "master" ]; then
-            echo "deploying $VERSION_NUMBER"
-            mike deploy $VERSION_NUMBER 
-            mike set-default $VERSION_NUMBER 
-          else
-            mike deploy dev 
-            mike set-default dev
-          fi
-          git branch 
-        shell: bash
-        
-      # Phase V: Deploy Website 
-      #This phase deploys the website to the S3 Bucket. If this is a test, the website is uploaded to Gamma. Otherwise it is uploaded to produciton. 
-      - name: Copy files to S3 with the AWS CLI
-        if: github.event_name != 'pull_request'
-        env:
-          TESTING: ${{ github.event.inputs.testing }}
-        run: |
-          cd /home/runner/work/djl/djl
-          git checkout gh-pages
-          if [ -d ./docs ]; then
-              rm -rf ./docs
-          fi
-          git branch 
-          pwd
-          ls
-          if [ "$TESTING" = "true" ]; then
-            echo "TEST SYNC"
-              aws s3 sync . s3://updated-documentation-website/website/ --exclude ".*" --delete
-          else
-            echo "REAL SYNC"
-            aws s3 sync . s3://djl-ai/documentation/nightly --exclude ".*" --delete
-            aws cloudfront create-invalidation --distribution-id E733IIDCG0G5U --paths "/*"
-          fi
-        shell: bash
+          echo "Building Website" 
+          ./build-website.sh -t "$TESTING_FLAG" -v "${{ github.event.inputs.version-number }}"
         
