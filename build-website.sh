@@ -22,6 +22,8 @@ echo "TESTING set to $TESTING."
 #Create and Sync gh-pages for Mike 
 git checkout -b docs-update
 git branch gh-pages 
+
+cd docs 
 mike delete --all 
 git checkout gh-pages 
 cd.. 
@@ -58,8 +60,8 @@ echo "Syncing..."
 echo "The directory is" 
 pwd 
 if [ "$TESTING" = "true" ]; then
-  aws s3 cp ./index.html s3://updated-documentation-website/website/ 
-  aws s3 cp ./versions.json s3://updated-documentation-website/website/ 
+  aws s3 cp ./index.html s3://updated-documentation-website/website/index.html 
+  aws s3 cp ./versions.json s3://updated-documentation-website/website/versions.json 
   aws s3 sync ./"$VERSION_NUMBER" s3://updated-documentation-website/website/ 
 else
   aws s3 cp ./index.html s3://djl-ai/documentation/nightly 
