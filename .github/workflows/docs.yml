@@ -29,7 +29,6 @@ jobs:
     # Change line below 
     runs-on: ubuntu-latest
     steps:
-        
     #Phase I: Set-up
     #This phase sets up all of the necessary dependencies. This includes installing Java, Python, and adding the tools used to build the documentation website. 
       - name: Set up JDK 17
@@ -97,11 +96,11 @@ jobs:
           ref: ${{ github.event.inputs.version-number || 'master' }}
           path: docs/serving
 
-      - name: Checkout DJL-Serving
+      - name: Checkout DJL-Demo
         uses: actions/checkout@v4
         with:
           repository: 'deepjavalibrary/djl-demo' 
-          ref: ${{ github.event.inputs.version-number || 'master' }}
+          ref: ${{ 'master' }}
           path: docs/demos
    
       - name: Add mybinder link
