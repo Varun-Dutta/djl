@@ -11,7 +11,7 @@ for file in Path('.').glob('**/*.ipynb'):
         constructor["source"] = [prefix + str(file) + ")"]
         data["cells"].insert(0, constructor)
         writer.write(json.dumps(data))
-    except json.JSONDecodeError as e:
+    except ValueError as e:
         print(f"Error processing {file}: {e}")
     except Exception as e:
         print(f"Unexpected error processing {file}: {e}")
