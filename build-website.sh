@@ -20,10 +20,10 @@ done
 echo "TESTING set to $TESTING."
 
 #Create and Sync gh-pages for Mike 
-git checkout -b gh-pages 
+git branch gh-pages 
 mike delete --all 
 git checkout gh-pages 
-cd .. 
+cd.. 
 
 #ADD PARAMETER CHECKING
 if [ "$TESTING" = "true" ]; then 
