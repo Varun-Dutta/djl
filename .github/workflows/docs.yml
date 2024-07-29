@@ -26,7 +26,6 @@ permissions:
   
 jobs:    
   documentation:
-    # Change line below 
     runs-on: ubuntu-latest
     steps:
     #Phase I: Set-up
@@ -85,8 +84,6 @@ jobs:
       - name: Delete index.html 
         run: |
           rm -f index.html    
-          #git add -u 
-          #git commit -m "Removed index.html" || echo "No changes to commit"
         shell: bash
 
       - name: Checkout DJL-Serving
