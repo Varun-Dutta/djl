@@ -122,5 +122,6 @@ jobs:
           TESTING_FLAG: ${{ github.event.inputs.testing }}
         run: |
           echo "Building Website" 
+          chmod +x build-website.sh
           ./build-website.sh -t "$TESTING_FLAG" -v "${{ github.event.inputs.version-number }}"
         
