@@ -100,17 +100,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: 'deepjavalibrary/djl-demo' 
-          ref: ${{ 'master' }}
+          ref: ${{ github.event.inputs.version-number || 'master' }}
           path: docs/demos
    
       - name: Add mybinder link
         run: |
           python3 tools/scripts/add_online_runner.py
         
-      #- name: run Notebooks
-       # run: |
-        #  cd docs/demos/jupyter
-         # bash test_notebook.sh
+      - name: run Notebooks
+        run: |
+          cd docs/demos/jupyter
+          bash test_notebook.sh
 
       #Phase III: Retrive Current Website
       #This phase handles authentication with AWS then retrieves the current version of the website that is stored in S3. The key pieces are the index.html and versions.json which serve as the landing page and the tracker of previous versions. 
