@@ -53,7 +53,10 @@ fi
 #Upload New Artificats
 git checkout gh-pages
 cd .. 
+ls
 echo "Syncing..."
+echo "The directory is" 
+pwd 
 if [ "$TESTING" = "true" ]; then
   aws s3 cp ./index.html s3://updated-documentation-website/website/ 
   aws s3 cp ./versions.json s3://updated-documentation-website/website/ 
