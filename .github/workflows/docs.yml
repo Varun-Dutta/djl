@@ -98,8 +98,7 @@ jobs:
           python3 tools/scripts/add_online_runner.py
 
       #Phase III: Retrive Current Website
-      #This phase handles authentication with AWS then retrieves the current version of the website that is stored in S3. The key pieces are the index.html and versions.json which serve as the landing page and the tracker of previous versions. 
-      #Potential Improvement: See if mike still works if only downloading the index.html file and versions.json rather than the entire previous website.
+      #This phase handles authentication with AWS. 
       - name: Configure AWS Test Credentials
         if: ${{ github.event.inputs.testing == 'true' }}
         uses: aws-actions/configure-aws-credentials@v4
