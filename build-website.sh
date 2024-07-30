@@ -23,8 +23,8 @@ echo "TESTING set to $TESTING."
 git add . 
 git commit -m "Debugging Commit" 
 
-#Create gh-pages branch for mike, delete files that can interfere with mike, download previous versions of website from S3 Bucket. 
-#docs-update branch instead of master in case user is running the workflow from a different branch, such as main. This allows the workflow to switch back to the docs-update branch rather than throwing an error because its looking for a master branch when none is found. 
+#Create gh-pages branch for mike, delete files that can interfere with documentation build process, download previous versions of website from S3 Bucket. 
+#docs-update branch instead of master in case user is running the workflow from a different branch, such as main. This allows the workflow to switch back to the docs-update branch rather than throwing an error because the master branch does not exist. 
 git checkout -b docs-update
 git branch gh-pages 
 cd docs 
@@ -32,7 +32,7 @@ mike delete --all
 git checkout gh-pages 
 cd .. 
 
-#Download the index.html and versions.json for mike to reference
+#Download the index.html and versions.json for mike to reference and update during the build process 
 if [ "$TESTING" = "true" ]; then 
   aws s3 cp s3://updated-documentation-website/website/index.html . 
   aws s3 cp s3://updated-documentation-website/website/versions.json . 
@@ -41,11 +41,11 @@ else
   aws s3 cp s3://djl-ai/documentation/nightly/versions.json . 
 fi 
 
-#Commits are necssary to swtich to switch back to the docs-update branch. 
+#Commits are necssary to switch back to the docs-update branch. 
 git add . 
 git commit -m "Sync Finished" 
 
-#Switch back to docs-update branch to invoke mike 
+#Switch back to docs-update branch to invoke mike to build the new documentation 
 git checkout docs-update
 cd docs
 echo "deploying $VERSION_NUMBER"
@@ -55,7 +55,7 @@ fi
 mike deploy $VERSION_NUMBER 
 mike set-default $VERSION_NUMBER 
 
-#Upload Artificats for New Version of the Website
+#Upload Artificats for New Version of the Website to the S3 Bucket 
 git checkout gh-pages
 cd .. 
 echo "Syncing..."
