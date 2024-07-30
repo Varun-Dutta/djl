@@ -19,6 +19,9 @@ while getopts "t:v:" arg; do
 done 
 echo "TESTING set to $TESTING."
 
+git add . 
+git commit -m "Debugging Commit" 
+
 #Create and Sync gh-pages for Mike 
 git checkout -b docs-update
 git branch gh-pages 
@@ -62,10 +65,10 @@ pwd
 if [ "$TESTING" = "true" ]; then
   aws s3 cp ./index.html s3://updated-documentation-website/website/index.html 
   aws s3 cp ./versions.json s3://updated-documentation-website/website/versions.json 
-  aws s3 sync ./"$VERSION_NUMBER" s3://updated-documentation-website/website/ 
+  aws s3 sync ./"$VERSION_NUMBER" s3://updated-documentation-website/website/"$VERSION_NUMBER" 
 else
-  aws s3 cp ./index.html s3://djl-ai/documentation/nightly 
-  aws s3 cp ./versions.json s3://djl-ai/documentation/nightly 
-  aws s3 sync ./"$VERSION_NUMBER" s3://djl-ai/documentation/nightly 
+  aws s3 cp ./index.html s3://djl-ai/documentation/nightly/index.html 
+  aws s3 cp ./versions.json s3://djl-ai/documentation/nightly/versions 
+  aws s3 sync ./"$VERSION_NUMBER" s3://djl-ai/documentation/nightly/"$VERSION_NUMBER" 
   aws cloudfront create-invalidation --distribution-id E733IIDCG0G5U --paths "/*"
 fi
