@@ -19,19 +19,20 @@ while getopts "t:v:" arg; do
 done 
 echo "TESTING set to $TESTING."
 
+#These commits are necessary to switch to the gh-pages branch in the next step. 
 git add . 
 git commit -m "Debugging Commit" 
 
-#Create and Sync gh-pages for Mike 
+#Create gh-pages branch for mike, delete files that can interfere with mike, download previous versions of website from S3 Bucket. 
+#docs-update branch instead of master in case user is running the workflow from a different branch, such as main. This allows the workflow to switch back to the docs-update branch rather than throwing an error because its looking for a master branch when none is found. 
 git checkout -b docs-update
 git branch gh-pages 
-
 cd docs 
 mike delete --all 
 git checkout gh-pages 
 cd .. 
 
-#ADD PARAMETER CHECKING
+#Download the index.html and versions.json for mike to reference
 if [ "$TESTING" = "true" ]; then 
   aws s3 mv s3://updated-documentation-website/website/index.html . 
   aws s3 mv s3://updated-documentation-website/website/versions.json . 
@@ -40,21 +41,21 @@ else
   aws s3 mv s3://djl-ai/documentation/nightly/versions.json . 
 fi 
 
-#Test Removing This
+#Commits are necssary to swtich to switch back to the docs-update branch. 
 git add . 
 git commit -m "Sync Finished" 
+
+#Switch back to docs-update branch to invoke mike 
 git checkout docs-update
 cd docs
-
 echo "deploying $VERSION_NUMBER"
 if [ "$VERSION_NUMBER" = "master" ]; then
   VERSION_NUMBER=dev
 fi
-VERSION_NUMBER=29.0
 mike deploy $VERSION_NUMBER 
 mike set-default $VERSION_NUMBER 
 
-#Upload New Artificats
+#Upload Artificats for New Version of the Website
 git checkout gh-pages
 cd .. 
 ls
