@@ -40,9 +40,9 @@ else
   aws s3 mv s3://djl-ai/documentation/nightly/versions.json . 
 fi 
 
-#TEST REMOVING THIS 
-git add . 
-git commit -m "Sync Finished" 
+#Test Removing This
+#git add . 
+#git commit -m "Sync Finished" 
 git checkout docs-update
 cd docs
 
@@ -50,7 +50,7 @@ echo "deploying $VERSION_NUMBER"
 if [ "$VERSION_NUMBER" = "master" ]; then
   VERSION_NUMBER=dev
 fi
-VERSION_NUMBER=28.0
+VERSION_NUMBER=29.0
 mike deploy $VERSION_NUMBER 
 mike set-default $VERSION_NUMBER 
 
