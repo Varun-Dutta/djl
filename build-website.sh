@@ -29,7 +29,7 @@ git branch gh-pages
 cd docs 
 mike delete --all 
 git checkout gh-pages 
-cd.. 
+cd .. 
 
 #ADD PARAMETER CHECKING
 if [ "$TESTING" = "true" ]; then 
