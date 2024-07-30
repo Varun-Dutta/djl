@@ -47,13 +47,11 @@ git checkout docs-update
 cd docs
 
 echo "deploying $VERSION_NUMBER"
-if [ "$VERSION_NUMBER" != "master" ]; then
-  mike deploy $VERSION_NUMBER 
-  mike set-default $VERSION_NUMBER 
-else
-  mike deploy dev 
-  mike set-default dev
+if [ "$VERSION_NUMBER" = "master" ]; then
+  VERSION_NUMBER=dev
 fi
+mike deploy $VERSION_NUMBER 
+mike set-default $VERSION_NUMBER 
 
 #Upload New Artificats
 git checkout gh-pages
