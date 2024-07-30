@@ -41,8 +41,8 @@ else
 fi 
 
 #Test Removing This
-#git add . 
-#git commit -m "Sync Finished" 
+git add . 
+git commit -m "Sync Finished" 
 git checkout docs-update
 cd docs
 
