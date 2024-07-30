@@ -34,11 +34,11 @@ cd ..
 
 #Download the index.html and versions.json for mike to reference
 if [ "$TESTING" = "true" ]; then 
-  aws s3 mv s3://updated-documentation-website/website/index.html . 
-  aws s3 mv s3://updated-documentation-website/website/versions.json . 
+  aws s3 cp s3://updated-documentation-website/website/index.html . 
+  aws s3 cp s3://updated-documentation-website/website/versions.json . 
 else
-  aws s3 mv s3://djl-ai/documentation/nightly/index.html .
-  aws s3 mv s3://djl-ai/documentation/nightly/versions.json . 
+  aws s3 cp s3://djl-ai/documentation/nightly/index.html .
+  aws s3 cp s3://djl-ai/documentation/nightly/versions.json . 
 fi 
 
 #Commits are necssary to swtich to switch back to the docs-update branch. 
@@ -58,10 +58,7 @@ mike set-default $VERSION_NUMBER
 #Upload Artificats for New Version of the Website
 git checkout gh-pages
 cd .. 
-ls
 echo "Syncing..."
-echo "The directory is" 
-pwd 
 if [ "$TESTING" = "true" ]; then
   aws s3 cp ./index.html s3://updated-documentation-website/website/index.html 
   aws s3 cp ./versions.json s3://updated-documentation-website/website/versions.json 
