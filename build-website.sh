@@ -50,6 +50,7 @@ echo "deploying $VERSION_NUMBER"
 if [ "$VERSION_NUMBER" = "master" ]; then
   VERSION_NUMBER=dev
 fi
+VERSION_NUMBER=28.0
 mike deploy $VERSION_NUMBER 
 mike set-default $VERSION_NUMBER 
 
